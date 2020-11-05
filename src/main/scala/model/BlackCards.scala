@@ -1,5 +1,5 @@
 package model
 
-class BlackCards {
-
+case class BlackCards (text: String) {
+  override def toString: String = "DefaultText"
 }
