@@ -1,6 +1,7 @@
+package model
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import model.WhiteCards
 
 class WhiteCardsSpec extends AnyWordSpec with Matchers{
   "A WhiteCard" should { "new" should {
