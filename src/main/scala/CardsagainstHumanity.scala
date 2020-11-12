@@ -1,16 +1,22 @@
-import model.{BlackCards, Player, WhiteCards}
+import model.{BlackCards, GameTable, Player, WhiteCards}
+import aview.Tui
+
+import scala.io.StdIn.readLine
 
 object CardsagainstHumanity {
   def main(args: Array[String]): Unit = {
-    println("Cards against Humanity! by Niklas and Paul")
 
-    val player1 = Player("Niklas")
-    val testBC = BlackCards("___ ist sehr cool")
-    val testWC = WhiteCards("Barack Obama")
+    val tui = new Tui
+    var input: String = "0"
+    val gameTable = new GameTable(3)
 
-    println(player1.toString)
-    println(testBC.toString)
-    println(testWC.toString)
+    if (args.length>0) input=args(0)
+    else do{
+      input = readLine()
 
+      tui.processInputLine(input, gameTable)
+    }while(input != "q")
   }
+
 }
+
