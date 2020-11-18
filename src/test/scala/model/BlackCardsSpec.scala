@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class BlackCardsSpec extends AnyWordSpec with Matchers{
   "A BlackCard" should { "new" should {
-    val blackcard = BlackCards("DefaultText")
+    val blackcard = BlackCard("DefaultText")
     "have a Text" in {
       blackcard.text should be("DefaultText")
     }
