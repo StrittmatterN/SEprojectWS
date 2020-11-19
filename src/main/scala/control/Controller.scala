@@ -19,9 +19,7 @@ class Controller(var gameTable: GameTable) {
     val whiteList = whiteListBuf.toList
     val blackList = blackListBuf.toList
 
-    println(whiteList)
-    println(blackList)
-    gameTable = GameTable(cardDeck, player, whiteList, blackList, null, null)
+    gameTable = GameTable(cardDeck, player, whiteList, blackList, null, null, 0)
   }
 
   def drawCards(currPlr: Int, n: Int): Unit = {

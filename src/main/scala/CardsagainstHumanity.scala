@@ -6,7 +6,7 @@ import scala.io.StdIn.readLine
 object CardsagainstHumanity {
   def main(args: Array[String]): Unit = {
 
-    val controller = new Controller(GameTable(null, null, null, null, null, null))
+    val controller = new Controller(GameTable(null, null, null, null, null, null, 0))
     val tui = new Tui(controller)
     var input = ""
     do {

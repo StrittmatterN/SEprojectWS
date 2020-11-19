@@ -3,7 +3,8 @@ package model
 import scala.collection.mutable.ListBuffer
 
 case class GameTable(cardDeck: CardDeck, player: Vector[Player], whiteCards: List[WhiteCard],
-                     blackCards: List[BlackCard], placedWhiteCards: Map[Player, String], var currBlack: String) {
+                     blackCards: List[BlackCard], placedWhiteCards: Map[Player, String],
+                     var currBlack: String, var currPlayer: Int) {
 
 
   def createDeck(cardDeck: CardDeck): GameTable = {
@@ -22,12 +23,10 @@ case class GameTable(cardDeck: CardDeck, player: Vector[Player], whiteCards: Lis
 
 
   def drawCards(currPlr: Int, n: Int): GameTable = {
-
     var count = 0
     var wList = List[WhiteCard]()
     wList = wList ++ whiteCards
     var pVec = Vector[Player]()
-
 
     for (p <- player) {
       var tmpWhites = List[WhiteCard]()
@@ -35,7 +34,8 @@ case class GameTable(cardDeck: CardDeck, player: Vector[Player], whiteCards: Lis
         tmpWhites = tmpWhites :+ wList(count)
         count = (count + 1) % whiteCards.length
       }
-      pVec = pVec :+ Player(p.name, tmpWhites)
+      if (player(currPlr) == p) pVec = pVec :+ Player(p.name, tmpWhites)
+      else pVec :+ Player(p.name, p.cards)
     }
     copy(cardDeck, pVec, wList, blackCards, placedWhiteCards, currBlack)
   }
@@ -68,7 +68,20 @@ case class GameTable(cardDeck: CardDeck, player: Vector[Player], whiteCards: Lis
 
   override def toString: String = {
     val sb = new StringBuilder
-    sb ++= "Hey"
+    sb ++= s"Weiße Karten: $whiteCards\nSchwarze Karten: $blackCards\n\nAktuelle schwarze Karte: $currBlack"
+    sb ++= s"\naktueller Spieler: ${player(currPlayer)}"
+    sb ++= "\nHandkarten:\n"
+    for(i <- player) {
+      sb ++= s"Spieler ${i.name}: "
+      if (i.cards != null) sb ++= s" ${i.cards}\n"
+    }
+    sb ++= "gelegte Karten: "
+    if (placedWhiteCards != null) {
+      for (i <- placedWhiteCards) {
+        sb ++= s"\nSpieler ${i._1.name}: ${i._2}"
+      }
+    }
+
     sb.toString()
   }
 
