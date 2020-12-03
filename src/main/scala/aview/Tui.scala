@@ -4,9 +4,10 @@ import model._
 import control._
 import util.Observer
 
-class Tui (controller: Controller) extends  Observer {
+class Tui (controller: Controller) extends Observer {
 
   controller.add(this)
+
   val player = Vector(Player("Paul", List[WhiteCard]()), Player("Niklas", List[WhiteCard]()))
 
   val def_blacks: List[String] = List[String]("_ + _ = _",
