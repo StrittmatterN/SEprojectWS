@@ -4,7 +4,6 @@ import model._
 
 import scala.collection.mutable.ListBuffer
 
-
 class Controller(var gameTable: GameTable) {
 
   var currPlr = 0

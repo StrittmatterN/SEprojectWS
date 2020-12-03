@@ -2,8 +2,8 @@ package model
 
 import scala.collection.mutable.ListBuffer
 
-case class GameTable(cardDeck: CardDeck, player: Vector[Player], whiteCards: List[WhiteCard],
-                     blackCards: List[BlackCard], placedWhiteCards: Map[Player, String],
+case class GameTable(cardDeck: CardDeck, var player: Vector[Player], var whiteCards: List[WhiteCard],
+                     var blackCards: List[BlackCard], placedWhiteCards: Map[Player, String],
                      var currBlack: String, var currPlayer: Int) {
 
 
