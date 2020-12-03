@@ -2,9 +2,11 @@ package aview
 
 import model._
 import control._
+import util.Observer
 
-class Tui (controller: Controller) {
+class Tui (controller: Controller) extends  Observer {
 
+  controller.add(this)
   val player = Vector(Player("Paul", List[WhiteCard]()), Player("Niklas", List[WhiteCard]()))
 
   val def_blacks: List[String] = List[String]("_ + _ = _",
@@ -20,6 +22,12 @@ class Tui (controller: Controller) {
 
   def processInputLine(input: String) : Unit = {
     input match {
+      case "z" =>
+        controller.undo
+        println(controller.gameTable)
+      case "y" =>
+        controller.redo
+        println(controller.gameTable)
       case "new" =>
         controller.init(cards, player)
         println(controller.gameTable)
@@ -30,7 +38,7 @@ class Tui (controller: Controller) {
         controller.drawBlack()
         println(controller.gameTable)
       case "next" =>
-        controller.currPlr = (controller.currPlr + 1) % player.length - 1
+        controller.currPlr = (controller.currPlr + 1) % player.length
         println(controller.gameTable)
       case "q" =>
       case "print" => println(controller.gameTable.toString)
@@ -42,5 +50,9 @@ class Tui (controller: Controller) {
         case _ =>
       }
     }
+  }
+
+  override def update(): Unit = {
+    println(controller.gameTable)
   }
 }

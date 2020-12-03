@@ -8,6 +8,8 @@ object CardsagainstHumanity {
 
     val controller = new Controller(GameTable(null, null, null, null, null, null, 0))
     val tui = new Tui(controller)
+    controller.notifyObservers()
+
     var input = ""
     do {
       input = readLine()
