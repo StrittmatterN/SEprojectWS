@@ -4,6 +4,7 @@ import model.{BlackCard, GameTable, Player, WhiteCard}
 import scala.io.StdIn.readLine
 
 object CardsagainstHumanity {
+
   def main(args: Array[String]): Unit = {
 
     val controller = new Controller(GameTable(null, null, null, null, null, null, 0))
