@@ -68,19 +68,25 @@ case class GameTable(cardDeck: CardDeck, var player: Vector[Player], var whiteCa
 
   override def toString: String = {
     val sb = new StringBuilder
-    sb ++= s"Weiße Karten: $whiteCards\nSchwarze Karten: $blackCards\n\nAktuelle schwarze Karte: $currBlack"
-    sb ++= s"\naktueller Spieler: ${player(currPlayer)}"
-    sb ++= "\nHandkarten:\n"
-    for(i <- player) {
-      sb ++= s"Spieler ${i.name}: "
-      if (i.cards != null) sb ++= s" ${i.cards}\n"
-    }
-    sb ++= "gelegte Karten: "
-    if (placedWhiteCards != null) {
-      for (i <- placedWhiteCards) {
-        sb ++= s"\nSpieler ${i._1.name}: ${i._2}"
+
+    if (whiteCards == null) {
+      sb ++= "game not setup yet"
+    } else {
+      sb ++= s"Weiße Karten: $whiteCards\nSchwarze Karten: $blackCards\n\nAktuelle schwarze Karte: $currBlack"
+      sb ++= s"\naktueller Spieler: ${player(currPlayer)}"
+      sb ++= "\nHandkarten:\n"
+      for(i <- player) {
+        sb ++= s"Spieler ${i.name}: "
+        if (i.cards != null) sb ++= s" ${i.cards}\n"
+      }
+      sb ++= "gelegte Karten: "
+      if (placedWhiteCards != null) {
+        for (i <- placedWhiteCards) {
+          sb ++= s"\nSpieler ${i._1.name}: ${i._2}"
+        }
       }
     }
+
 
     sb.toString()
   }

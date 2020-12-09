@@ -2,18 +2,24 @@ package model
 
 trait Card {
   def printCard()
-  def addNew (card: Card): Card
-  def remove (card: Card): Card
+  def createNewCard (text: String): Card
 }
 
-case class Cards(cardList: List[Card]) extends Card {
+object Card {
+  def apply(text: String): Card = {
+    if (text.contains("_")) BlackCard(text)
+    else WhiteCard(text)
+  }
+}
 
-  override def printCard(): Unit = cardList.foreach((c: Card) => c.printCard())
+case class Cards(cardList: List[Card]) {
 
-  override def addNew(card: Card): Cards = {
+  def printCard(): Unit = cardList.foreach((c: Card) => c.printCard())
+
+  def addNew(card: Card): Cards = {
     val tmp = cardList :+ card
     copy(tmp)
   }
 
-  override def remove(card: Card): Cards = copy(cardList.filterNot(_ == card))
+  def remove(card: Card): Cards = copy(cardList.filterNot(_ == card))
 }
