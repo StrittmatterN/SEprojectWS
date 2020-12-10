@@ -1,5 +1,7 @@
 package model
 
+// Factory Method
+
 trait Card {
   def printCard()
   def createNewCard (text: String): Card

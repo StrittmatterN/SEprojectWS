@@ -16,6 +16,5 @@ object CardsagainstHumanity {
       input = readLine()
       tui.processInputLine(input)
     } while (input != "q")
-
   }
 }

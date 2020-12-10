@@ -40,7 +40,6 @@ case class GameTable(cardDeck: CardDeck, var player: Vector[Player], var whiteCa
     copy(cardDeck, pVec, wList, blackCards, placedWhiteCards, currBlack)
   }
 
-
   def drawBlack (): GameTable = {
     var newBlackList = List[BlackCard]()
     newBlackList = newBlackList ++ blackCards
@@ -90,9 +89,4 @@ case class GameTable(cardDeck: CardDeck, var player: Vector[Player], var whiteCa
 
     sb.toString()
   }
-
-
-
-
-
 }
