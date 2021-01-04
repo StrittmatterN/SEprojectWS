@@ -1,92 +1,138 @@
 package model
 
-import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
-case class GameTable(cardDeck: CardDeck, var player: Vector[Player], var whiteCards: List[WhiteCard],
-                     var blackCards: List[BlackCard], placedWhiteCards: Map[Player, String],
-                     var currBlack: String, var currPlayer: Int) {
+case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, currRound: Int = 0,
+                     cardDeck: CardDeck = CardDeck(List[String](), List[String]()),
+                     var player: Vector[Player] = Vector[Player](),
+                     var whiteCards: List[WhiteCard] = List[WhiteCard](),
+                     var blackCards: List[BlackCard] = List[BlackCard](),
+                     placedWhiteCards: Map[Player, String] = Map[Player, String](),
+                     var currBlack: String = "") extends ModelInterface {
 
-
-  def createDeck(cardDeck: CardDeck): GameTable = {
-
-    val whiteList = ListBuffer[WhiteCard]()
-    val blackList = ListBuffer[BlackCard]()
-
-    for (white <- cardDeck.whites) whiteList.addOne(WhiteCard(white))
-    for (black <- cardDeck.blacks) blackList.addOne(BlackCard(black))
-
-    val wl = whiteList.toList
-    val bl = blackList.toList
-
-    copy(cardDeck, player, wl, bl)
+  override def initGame(nrOfPlrs: Int): GameTable = {
+    setNrRounds(nrOfPlrs)
+    GameTable.Builder()
+      .withNrOfRounds(this.nrOfRounds)
+      .withNrOfPlrs(this.nrOfPlrs)
+      .build()
   }
 
+  override def setNrRounds(nrOfPlrs: Int): GameTable = {
+    if (nrOfPlrs == 2) copy(nrOfRounds = 4)
+    else if (nrOfPlrs == 3) copy(nrOfRounds= 3)
+    else copy(nrOfRounds = 4)
+  }
 
-  def drawCards(currPlr: Int, n: Int): GameTable = {
+  override def addPlr(name: String): GameTable = {
+    copy(player = player :+ Player(name, List[WhiteCard](), isOnIt = true))
+  }
+
+  override def createDeck(deck: CardDeck): GameTable = {
+    val whites = this.whiteCards
+    val blacks = this.blackCards
+    for (o <- cardDeck.whites) whites :+ o
+    for (o <- cardDeck.blacks) blacks :+ o
+    copy(whiteCards = whites, blackCards = blacks)
+  }
+
+  override def setCardDeck(deck: CardDeck): GameTable = copy(cardDeck = deck)
+
+  override def getWhitesOrBlacks(color: String): List[Card] = {
+    if (color == "blacks") blackCards
+    else if (color == "whites") whiteCards
+    else throw new Exception("parameter in getCardDeck must either be whites or blacks")
+  }
+
+  override def getDeck: CardDeck = cardDeck
+
+  override def createHand(): List[WhiteCard] = {
+    val whiteDeck = Random.shuffle(whiteCards)
+    var handOutWhites = List[WhiteCard]()
     var count = 0
-    var wList = List[WhiteCard]()
-    wList = wList ++ whiteCards
-    var pVec = Vector[Player]()
-
-    for (p <- player) {
-      var tmpWhites = List[WhiteCard]()
-      while (count < n) {
-        tmpWhites = tmpWhites :+ wList(count)
-        count = (count + 1) % whiteCards.length
-      }
-      if (player(currPlr) == p) pVec = pVec :+ Player(p.name, tmpWhites)
-      else pVec :+ Player(p.name, p.cards)
+    for (x <- whiteDeck if whiteDeck.nonEmpty; if count < 5) {
+      handOutWhites = handOutWhites :+ x
+      count += 1
     }
-    copy(cardDeck, pVec, wList, blackCards, placedWhiteCards, currBlack)
+    handOutWhites
   }
 
-  def drawBlack (): GameTable = {
-    var newBlackList = List[BlackCard]()
-    newBlackList = newBlackList ++ blackCards
-    val black = blackCards.head
-    newBlackList = newBlackList.filterNot(_ == black)
-    copy(cardDeck, player, whiteCards, newBlackList, placedWhiteCards, black.toString)
+  override def setPlrHands(): Vector[Player] = {
+    for (x <- player) {
+      x.cards = createHand()
+    }
+    player
   }
 
-  def placeWhite (plr: Int, card: WhiteCard): GameTable = {
-    var placedCardMap = Map[Player, String]()
-
-    if (placedWhiteCards != null) placedCardMap ++= placedWhiteCards
-
-    var plrCards = List[WhiteCard]()
-    plrCards ++= player(plr).cards
-    placedCardMap += (player(plr) -> card.toString)
-    plrCards = plrCards.filterNot(_ == card)
-
-    var pVec: Vector[Player] = Vector()
-    pVec = pVec ++ player
-    pVec = pVec.updated(plr, Player(player(plr).name, plrCards))
-
-    copy(cardDeck, pVec, whiteCards, blackCards, placedCardMap, currBlack)
+  override def handOutCards(): GameTable = {
+    setPlrHands()
+    copy()
   }
 
-  override def toString: String = {
-    val sb = new StringBuilder
+  override def drawWhiteCard(): GameTable = {
+    var whites = Random.shuffle(whiteCards)
+    var plr = Vector[Player]()
+    for (x <- plr) {
+      val card = whites.head
+      whites = whites.filterNot(_ == card)
+      plr = plr :+ Player(x.name, x.cards :+ card, x.isOnIt)
+    }
+    copy(whiteCards = whites, player = plr)
+  }
 
-    if (whiteCards == null) {
-      sb ++= "game not setup yet"
-    } else {
-      sb ++= s"Weiße Karten: $whiteCards\nSchwarze Karten: $blackCards\n\nAktuelle schwarze Karte: $currBlack"
-      sb ++= s"\naktueller Spieler: ${player(currPlayer)}"
-      sb ++= "\nHandkarten:\n"
-      for(i <- player) {
-        sb ++= s"Spieler ${i.name}: "
-        if (i.cards != null) sb ++= s" ${i.cards}\n"
+  override def showBlackCard(): GameTable = {
+    var reduced = blackCards
+    reduced = Random.shuffle(reduced)
+    val black = reduced.head
+    val round = currRound + 1
+    copy(blackCards = reduced.filterNot(_ == black), currBlack = black.text1, currRound = round)
+  }
+
+  override def setPlrAnswer(currPlayer: Int, answer: WhiteCard): GameTable = {
+    var currPlaced = placedWhiteCards
+    currPlaced = currPlaced + (player(currPlayer) -> answer.text1)
+    copy(placedWhiteCards = currPlaced)
+  }
+
+  override def getCurrPlr: Int = currPlr
+
+  override def setNextPlr(): GameTable = copy(currPlr = (currPlr + 1) % nrOfPlrs)
+
+  override def clearRound(): GameTable = {
+    copy(placedWhiteCards = Map[Player, String]())
+  }
+
+  override def printGT(): Unit = {
+    val output = "white cards: " + whiteCards.toString() + "\nblack cards: " + blackCards.toString() +
+      s"\ncurrent black card: $currBlack\ndisplayed white cards: ${placedWhiteCards.toString()}\n" +
+      ""
+    println(output)
+    for (x <- player) {
+      println(s"current cards from ${x.name}: ${x.cards.toString()}\nnr of plr: $nrOfPlrs")
+    }
+  }
+
+  override def getGT: GameTable = this
+
+  object GameTable {
+    case class Builder() {
+      var nrOfPlrs: Int = 0
+      var nrOfRounds: Int = 0
+
+      def withNrOfPlrs(players: Int): Builder = {
+        nrOfPlrs = players
+        this
       }
-      sb ++= "gelegte Karten: "
-      if (placedWhiteCards != null) {
-        for (i <- placedWhiteCards) {
-          sb ++= s"\nSpieler ${i._1.name}: ${i._2}"
-        }
+
+      def withNrOfRounds(rounds: Int): Builder = {
+        nrOfRounds = rounds
+        this
+      }
+
+      def build(): GameTable = {
+        model.GameTable(nrOfPlrs, nrOfRounds)
       }
     }
-
-
-    sb.toString()
   }
+
 }

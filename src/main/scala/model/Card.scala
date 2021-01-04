@@ -1,10 +1,13 @@
 package model
 
+import scala.xml.Node
+
 // Factory Method
 
 trait Card {
   def printCard()
   def createNewCard (text: String): Card
+  def toXML(): Node
 }
 
 object Card {

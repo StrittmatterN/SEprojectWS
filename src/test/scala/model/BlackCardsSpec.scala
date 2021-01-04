@@ -7,7 +7,7 @@ class BlackCardsSpec extends AnyWordSpec with Matchers{
   "A BlackCard" should { "new" should {
     val blackcard = BlackCard("DefaultText")
     "have a Text" in {
-      blackcard.text should be("DefaultText")
+      blackcard.text1 should be("DefaultText")
     }
     "have a nice string representation" in {
       blackcard.toString should be("DefaultText")

@@ -2,29 +2,35 @@ package control.commands
 
 import control.Controller
 import util.Command
-import model.{BlackCard, WhiteCard}
+import model.{CardDeck, WhiteCard, BlackCard}
 
 class cmd_addCards(text: String, controller: Controller) extends Command {
-  var undoWhites: List[WhiteCard] = List[WhiteCard]()
-  var undoBlacks: List[BlackCard] = List[BlackCard]()
+
+  var undoDeck: CardDeck = controller.getGameTable.cardDeck
 
   override def doStep(): Unit = {
-    if (!text.contains("_")) {
-      var tmp = controller.gameTable.whiteCards
-      undoWhites = tmp
-      tmp = tmp :+ WhiteCard(text)
-      controller.gameTable.whiteCards = tmp
+    var tmpCards = controller.getGameTable.cardDeck
+    undoDeck = tmpCards
+    var notContains = true
+    if (text.contains("_")) {
+      for (x <- tmpCards.blacks) {
+        if (x.equals(text)) notContains = false
+      }
     } else {
-      var tmp = controller.gameTable.blackCards
-      undoBlacks = tmp
-      tmp = tmp :+ BlackCard(text)
-      controller.gameTable.blackCards = tmp
+      for (x <- tmpCards.whites) {
+        if (x.equals(text)) notContains = false
+      }
     }
+    if (notContains) {
+      if (text.contains("_")) tmpCards.blacks :+ BlackCard(text)
+      else tmpCards.whites :+ WhiteCard(text)
+    }
+    val newCardDeck = CardDeck(tmpCards.whites, tmpCards.blacks)
+    controller.getGameTable.setCardDeck(newCardDeck)
   }
 
   override def undoStep(): Unit = {
-    if(text.contains("_")) controller.gameTable.blackCards = undoBlacks
-    else controller.gameTable.whiteCards = undoWhites
+    controller.getGameTable.setCardDeck(undoDeck)
   }
 
   override def redoStep(): Unit = doStep()

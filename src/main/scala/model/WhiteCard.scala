@@ -1,9 +1,13 @@
 package model
 
-case class WhiteCard(text: String) extends Card {
-  override def toString: String = text
+import scala.xml.Node
 
-  override def printCard(): Unit = println(text)
+case class WhiteCard(text1: String) extends Card {
+  override def toString: String = text1
 
-  override def createNewCard(text: String): Card = WhiteCard(text)
+  override def printCard(): Unit = println(text1)
+
+  override def createNewCard(text1: String): Card = WhiteCard(text1)
+
+  def toXML(): Node = <card><text>{text1}</text></card>
 }

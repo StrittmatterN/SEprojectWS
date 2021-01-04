@@ -1,56 +1,155 @@
 package control
 
-import model._
+import model.{GameTable, ModelInterface}
+import control.commands._
+import module.Module
 import util._
-import scala.collection.mutable.ListBuffer
+import util.fileio.IOFile
+import com.google.inject._
 
-class Controller(var gameTable: GameTable) extends Observable {
+import scala.swing.Publisher
 
-  private val undoManager = new UndoManager
+class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInterface with Publisher {
 
-  var currPlr = 0
-  var round = 0
+  trait ControllerState {
+    def evaluate(input: String)
+    def getCurrState: String
+    def getNextState: ControllerState
+  }
+  var state: ControllerState = setupState1(this)
+  val injector: Injector = Guice.createInjector(new Module)
+  val fileManager: IOFile = injector.getInstance(classOf[IOFile])
+  val undoManager = new UndoManager
 
-  def init(cardDeck: CardDeck, player: Vector[Player]): Unit = {
-    var whiteListBuf = ListBuffer[WhiteCard]()
-    var blackListBuf = ListBuffer[BlackCard]()
-    for (c <- cardDeck.whites) whiteListBuf += WhiteCard(c)
-    for (c <- cardDeck.blacks) blackListBuf += BlackCard(c)
+  case class setupState1 (controller: Controller) extends ControllerState {
+    override def evaluate(input: String): Unit = {
+      controller.gameTable = controller.gameTable.initGame(input.toInt)
+      controller.gameTable = controller.fileManager.load(controller.gameTable)
+      controller.setPage(2)
+      controller.publish(new UpdateTuiEvent)
+      controller.nextState()
+    }
 
-    val whiteList = whiteListBuf.toList
-    val blackList = blackListBuf.toList
+    override def getCurrState: String = "Cards against Humanity by Niklas and Paul\n"
 
-    gameTable = GameTable(cardDeck, player, whiteList, blackList, null, null, 0)
-    notifyObservers
+    override def getNextState: ControllerState = setupState2(controller)
   }
 
-  def drawCards(currPlr: Int, n: Int): Unit = {
-    gameTable = gameTable.drawCards(currPlr, n)
-    notifyObservers
+  case class setupState2(controller: Controller) extends ControllerState {
+    println(controller.getGameTable.cardDeck.blacks)
+    println(controller.getGameTable.cardDeck.whites)
+    override def evaluate(input: String): Unit = {
+      if (input.equals("continue")) {
+        controller.nextState()
+        controller.publish(new ThirdPageEvent)
+      } else {
+        controller.undoManager.doStep(new cmd_addCards(input, controller))
+        controller.publish(new UpdateToolBarEvent)
+      }
+    }
+
+    override def getCurrState: String = "state: adding cards\n"
+
+    override def getNextState: ControllerState = setupState3(controller)
   }
 
-  def drawBlack(): Unit = {
-    gameTable = gameTable.drawBlack()
-    println(gameTable.currBlack)
-    notifyObservers()
+  case class setupState3(controller: Controller) extends ControllerState {
+    override def evaluate(input: String): Unit = {
+      if (input.isEmpty) return
+      controller.undoManager.doStep(new cmd_addPlayer(input, controller))
+      controller.publish(new UpdateTuiEvent)
+
+      if (controller.getGameTable.player.length == controller.getGameTable.nrOfPlrs) {
+        controller.gameTable = controller.gameTable.createDeck(controller.gameTable.getDeck)
+        controller.gameTable = controller.gameTable.handOutCards()
+        controller.nextState()
+        controller.publish(new NextStateEvent)
+      }
+    }
+
+    override def getCurrState: String = "state: adding players and handout cards"
+
+    override def getNextState: ControllerState = setWhiteCardState(controller)
   }
 
-  def put(index: Int): Unit = {
-    val white = gameTable.player(currPlr).cards(index)
-    gameTable = gameTable.placeWhite(currPlr, white)
-    currPlr = (currPlr + 1) % gameTable.player.length
-    notifyObservers
+  case class setWhiteCardState(controller: Controller) extends ControllerState {
+    override def evaluate(input: String): Unit = {
+      if (input.isEmpty
+        || controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.size)) {
+        controller.gameTable = controller.gameTable.clearRound()
+        controller.gameTable = controller.gameTable.showBlackCard()
+        controller.publish(new UpdateToolBarEvent)
+        controller.publish(new UpdateTuiEvent)
+      } else {
+        if (controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.length)) {
+          controller.gameTable = controller.gameTable.drawWhiteCard()
+          controller.gameTable = controller.gameTable.handOutCards()
+          controller.publish(new UpdateTuiEvent)
+          controller.nextState()
+        }
+        val currentPlayer = controller.getGameTable.getCurrPlr
+        if (input.toInt < controller.getGameTable.player(currentPlayer).cards.length || input.toInt >= 0) {
+          controller.gameTable =
+            controller.gameTable
+              .setPlrAnswer(currentPlayer, controller.getGameTable.player(currentPlayer).cards(input.toInt))
+          controller.gameTable = controller.gameTable.setNextPlr()
+          controller.publish(new UpdateTuiEvent)
+        }
+      }
+      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) controller.nextState()
+    }
+
+    override def getCurrState: String = controller.getGameTable.currBlack
+
+    override def getNextState: ControllerState = {
+      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) finalState(controller)
+      else this
+    }
   }
 
-  def undo: Unit = {
-    undoManager.undoStep
-    notifyObservers()
+  case class finalState(controller: Controller) extends ControllerState {
+    override def evaluate(input: String): Unit = ()
+
+    override def getCurrState: String = "exit with q"
+
+    override def getNextState: ControllerState = this
   }
 
-  def redo: Unit = {
+  override def undo(): Unit = {
+    undoManager.undoStep()
+    publish(new UndoEvent)
+  }
+
+  override def redo(): Unit = {
     undoManager.redoStep()
-    notifyObservers()
+    publish(new UndoEvent)
   }
 
+  override def load(): Unit = gameTable = fileManager.load(gameTable)
 
+  override def save(): Unit = fileManager.save(gameTable)
+
+  override def getGameTable: GameTable = gameTable.getGT
+
+  override def nextState(): Unit = state = state.getNextState
+
+  override def setPage(page: Int): Unit = {
+    page match {
+      case 1 => publish(new FirstPageEvent)
+      case 2 => publish(new SecondPageEvent)
+      case 3 => publish(new ThirdPageEvent)
+    }
+  }
+
+  override def evaluate(input: String): Unit = state.evaluate(input)
+
+  override def stateToString(): String = {
+    state match {
+          case _: setupState1 => "setup state part 1"
+          case _: setupState2 => "setup state part 2"
+          case _: setupState3 => "setup state part 3"
+          case _: setWhiteCardState => "set white cards state"
+          case _: finalState => "final state"
+    }
+  }
 }

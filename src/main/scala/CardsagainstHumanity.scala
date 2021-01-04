@@ -1,20 +1,22 @@
+
 import aview.Tui
+import com.google.inject.{Guice, Injector}
 import control.Controller
-import model.{BlackCard, GameTable, Player, WhiteCard}
+import module.Module
+
 import scala.io.StdIn.readLine
 
 object CardsagainstHumanity {
+  val injector: Injector = Guice.createInjector(new Module)
+  val controller: Controller = injector.getInstance(classOf[Controller])
+  val tui = new Tui(controller)
 
   def main(args: Array[String]): Unit = {
-
-    val controller = new Controller(GameTable(null, null, null, null, null, null, 0))
-    val tui = new Tui(controller)
-    controller.notifyObservers()
-
-    var input = ""
-    do {
+    var input: String = "0"
+    if (args.length > 0) input = args(0)
+    else do {
       input = readLine()
-      tui.processInputLine(input)
-    } while (input != "q")
+      tui.processInput(input)
+    } while (input != 'q')
   }
 }
