@@ -8,6 +8,7 @@ class Tui(controller: ControllerInterface) extends Publisher {
   def processInput(input: String): Unit = {
     input match {
       case "quit" =>
+      case "q" =>
       case "undo" => controller.undo()
       case "redo" => controller.redo()
       case _ => controller.evaluate(input)

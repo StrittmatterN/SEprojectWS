@@ -21,7 +21,9 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
   val fileManager: IOFile = injector.getInstance(classOf[IOFile])
   val undoManager = new UndoManager
 
+  // input -> nr of plr
   case class setupState1 (controller: Controller) extends ControllerState {
+    println("input: nr of players")
     override def evaluate(input: String): Unit = {
       controller.gameTable = controller.gameTable.initGame(input.toInt)
       controller.gameTable = controller.fileManager.load(controller.gameTable)
@@ -35,16 +37,17 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
     override def getNextState: ControllerState = setupState2(controller)
   }
 
+  // input -> Card text
   case class setupState2(controller: Controller) extends ControllerState {
-    println(controller.getGameTable.cardDeck.blacks)
-    println(controller.getGameTable.cardDeck.whites)
     override def evaluate(input: String): Unit = {
       if (input.equals("continue")) {
         controller.nextState()
+        controller.publish(new UpdateTuiEvent)
         controller.publish(new ThirdPageEvent)
       } else {
         controller.undoManager.doStep(new cmd_addCards(input, controller))
         controller.publish(new UpdateToolBarEvent)
+        controller.publish(new UpdateTuiEvent)
       }
     }
 
@@ -53,13 +56,14 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
     override def getNextState: ControllerState = setupState3(controller)
   }
 
+  // input -> names of all players
   case class setupState3(controller: Controller) extends ControllerState {
     override def evaluate(input: String): Unit = {
       if (input.isEmpty) return
       controller.undoManager.doStep(new cmd_addPlayer(input, controller))
       controller.publish(new UpdateTuiEvent)
 
-      if (controller.getGameTable.player.length == controller.getGameTable.nrOfPlrs) {
+      if (controller.getGameTable.player.size == controller.getGameTable.nrOfPlrs) {
         controller.gameTable = controller.gameTable.createDeck(controller.gameTable.getDeck)
         controller.gameTable = controller.gameTable.handOutCards()
         controller.nextState()
@@ -72,6 +76,7 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
     override def getNextState: ControllerState = setWhiteCardState(controller)
   }
 
+  // input -> none = set new round -> idx of cards of curr plr
   case class setWhiteCardState(controller: Controller) extends ControllerState {
     override def evaluate(input: String): Unit = {
       if (input.isEmpty
@@ -145,9 +150,9 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   override def stateToString(): String = {
     state match {
-          case _: setupState1 => "setup state part 1"
-          case _: setupState2 => "setup state part 2"
-          case _: setupState3 => "setup state part 3"
+          case _: setupState1 => "setup state part 1 (declare nr of plr and load CardDeck file)"
+          case _: setupState2 => "setup state part 2 (add cards until writing continue)"
+          case _: setupState3 => "setup state part 3 (name all player)"
           case _: setWhiteCardState => "set white cards state"
           case _: finalState => "final state"
     }

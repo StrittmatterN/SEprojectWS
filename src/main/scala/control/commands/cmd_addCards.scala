@@ -9,7 +9,7 @@ class cmd_addCards(text: String, controller: Controller) extends Command {
   var undoDeck: CardDeck = controller.getGameTable.cardDeck
 
   override def doStep(): Unit = {
-    var tmpCards = controller.getGameTable.cardDeck
+    val tmpCards = controller.getGameTable.cardDeck
     undoDeck = tmpCards
     var notContains = true
     if (text.contains("_")) {
@@ -22,8 +22,8 @@ class cmd_addCards(text: String, controller: Controller) extends Command {
       }
     }
     if (notContains) {
-      if (text.contains("_")) tmpCards.blacks :+ BlackCard(text)
-      else tmpCards.whites :+ WhiteCard(text)
+      if (text.contains("_")) tmpCards.blacks = tmpCards.blacks :+ text
+      else tmpCards.whites = tmpCards.whites :+ text
     }
     val newCardDeck = CardDeck(tmpCards.whites, tmpCards.blacks)
     controller.getGameTable.setCardDeck(newCardDeck)

@@ -3,7 +3,7 @@ package model
 import scala.util.Random
 
 case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, currRound: Int = 0,
-                     cardDeck: CardDeck = CardDeck(List[String](), List[String]()),
+                     var cardDeck: CardDeck = CardDeck(List[String](), List[String]()),
                      var player: Vector[Player] = Vector[Player](),
                      var whiteCards: List[WhiteCard] = List[WhiteCard](),
                      var blackCards: List[BlackCard] = List[BlackCard](),
@@ -12,16 +12,12 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
 
   override def initGame(nrOfPlrs: Int): GameTable = {
     setNrRounds(nrOfPlrs)
-    GameTable.Builder()
-      .withNrOfRounds(this.nrOfRounds)
-      .withNrOfPlrs(this.nrOfPlrs)
-      .build()
   }
 
   override def setNrRounds(nrOfPlrs: Int): GameTable = {
-    if (nrOfPlrs == 2) copy(nrOfRounds = 4)
-    else if (nrOfPlrs == 3) copy(nrOfRounds= 3)
-    else copy(nrOfRounds = 4)
+    if (nrOfPlrs == 2) copy(nrOfPlrs, nrOfRounds = 4)
+    else if (nrOfPlrs == 3) copy(nrOfPlrs, nrOfRounds= 3)
+    else copy(nrOfPlrs, nrOfRounds = 4)
   }
 
   override def addPlr(name: String): GameTable = {
@@ -29,14 +25,17 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   }
 
   override def createDeck(deck: CardDeck): GameTable = {
-    val whites = this.whiteCards
-    val blacks = this.blackCards
-    for (o <- cardDeck.whites) whites :+ o
-    for (o <- cardDeck.blacks) blacks :+ o
+    cardDeck = deck
+    var whites = this.whiteCards
+    var blacks = this.blackCards
+    for (o <- deck.whites) whites = whites :+ WhiteCard(o)
+    for (o <- deck.blacks) blacks = blacks :+ BlackCard(o)
     copy(whiteCards = whites, blackCards = blacks)
   }
 
-  override def setCardDeck(deck: CardDeck): GameTable = copy(cardDeck = deck)
+  override def setCardDeck(deck: CardDeck): GameTable = {
+    createDeck(deck)
+  }
 
   override def getWhitesOrBlacks(color: String): List[Card] = {
     if (color == "blacks") blackCards
@@ -103,13 +102,15 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   }
 
   override def printGT(): Unit = {
-    val output = "white cards: " + whiteCards.toString() + "\nblack cards: " + blackCards.toString() +
+    val output = s"number of players: $nrOfPlrs\n" +
+      "white cards: " + whiteCards.toString() + "\nblack cards: " + blackCards.toString() +
       s"\ncurrent black card: $currBlack\ndisplayed white cards: ${placedWhiteCards.toString()}\n" +
-      ""
+      s"round: $currRound"
     println(output)
     for (x <- player) {
-      println(s"current cards from ${x.name}: ${x.cards.toString()}\nnr of plr: $nrOfPlrs")
+      println(s"current cards from ${x.name}: ${x.cards.toString()}\n")
     }
+    if (player.nonEmpty) println(s"current player: ${player(currPlr).name}")
   }
 
   override def getGT: GameTable = this
