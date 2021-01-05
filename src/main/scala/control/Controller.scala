@@ -23,7 +23,6 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   // input -> nr of plr
   case class setupState1 (controller: Controller) extends ControllerState {
-    println("input: nr of players")
     override def evaluate(input: String): Unit = {
       controller.gameTable = controller.gameTable.initGame(input.toInt)
       controller.gameTable = controller.fileManager.load(controller.gameTable)
@@ -58,6 +57,7 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   // input -> names of all players
   case class setupState3(controller: Controller) extends ControllerState {
+    println("name all players")
     override def evaluate(input: String): Unit = {
       if (input.isEmpty) return
       controller.undoManager.doStep(new cmd_addPlayer(input, controller))
@@ -78,6 +78,7 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   // input -> none = set new round -> idx of cards of curr plr
   case class setWhiteCardState(controller: Controller) extends ControllerState {
+    println("input: none for clearing the round or index of the players white card")
     override def evaluate(input: String): Unit = {
       if (input.isEmpty
         || controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.size)) {
@@ -101,19 +102,26 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
           controller.publish(new UpdateTuiEvent)
         }
       }
-      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) controller.nextState()
+      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) {
+        controller.nextState()
+      }
     }
 
     override def getCurrState: String = controller.getGameTable.currBlack
 
     override def getNextState: ControllerState = {
-      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) finalState(controller)
-      else this
+      if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) {
+        publish(new UpdateTuiEvent)
+        finalState(controller)
+      } else this
     }
   }
 
   case class finalState(controller: Controller) extends ControllerState {
-    override def evaluate(input: String): Unit = ()
+    override def evaluate(input: String): Unit = {
+      println("Thanks for playing Cards Against Humanity by Niklas and Paul")
+      System.exit(0)
+    }
 
     override def getCurrState: String = "exit with q"
 
@@ -150,9 +158,9 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   override def stateToString(): String = {
     state match {
-          case _: setupState1 => "setup state part 1 (declare nr of plr and load CardDeck file)"
-          case _: setupState2 => "setup state part 2 (add cards until writing continue)"
-          case _: setupState3 => "setup state part 3 (name all player)"
+          case _: setupState1 => "setup state part 1"
+          case _: setupState2 => "setup state part 2"
+          case _: setupState3 => "setup state part 3"
           case _: setWhiteCardState => "set white cards state"
           case _: finalState => "final state"
     }

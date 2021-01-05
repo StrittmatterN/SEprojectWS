@@ -26,8 +26,8 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
 
   override def createDeck(deck: CardDeck): GameTable = {
     cardDeck = deck
-    var whites = this.whiteCards
-    var blacks = this.blackCards
+    var whites = List[WhiteCard]()
+    var blacks = List[BlackCard]()
     for (o <- deck.whites) whites = whites :+ WhiteCard(o)
     for (o <- deck.blacks) blacks = blacks :+ BlackCard(o)
     copy(whiteCards = whites, blackCards = blacks)
