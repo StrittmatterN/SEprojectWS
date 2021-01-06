@@ -16,10 +16,5 @@ class IOFile extends IOInterface {
   }
 
   override def save(modelInterface: ModelInterface): Unit = {
-    val printWriter = new PrintWriter(new File("CardDeck.xml"))
-    val blackCardsXML = <CardDeck>{modelInterface.getWhitesOrBlacks("blacks").map(x => x.toXML())}</CardDeck>
-    val whiteCardsXML = <CardDeck>{modelInterface.getWhitesOrBlacks("whites").map(x => x.toXML())}</CardDeck>
-    printWriter.write(blackCardsXML.toString())
-    printWriter.write(whiteCardsXML.toString())
   }
 }

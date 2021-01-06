@@ -28,6 +28,7 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
       controller.gameTable = controller.fileManager.load(controller.gameTable)
       controller.setPage(2)
       controller.publish(new UpdateTuiEvent)
+      controller.publish(new UpdateGuiEvent)
       controller.nextState()
     }
 
@@ -38,14 +39,16 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
 
   // input -> Card text
   case class setupState2(controller: Controller) extends ControllerState {
+    controller.publish(new UpdateTuiEvent)
+    controller.publish(new UpdateGuiEvent)
     override def evaluate(input: String): Unit = {
       if (input.equals("continue")) {
         controller.nextState()
-        controller.publish(new UpdateTuiEvent)
         controller.publish(new ThirdPageEvent)
       } else {
         controller.undoManager.doStep(new cmd_addCards(input, controller))
-        controller.publish(new UpdateToolBarEvent)
+        controller.publish(new UpdateInfotextbarEvent)
+        controller.publish(new UpdateGuiEvent)
         controller.publish(new UpdateTuiEvent)
       }
     }
@@ -62,11 +65,13 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
       if (input.isEmpty) return
       controller.undoManager.doStep(new cmd_addPlayer(input, controller))
       controller.publish(new UpdateTuiEvent)
+      controller.publish(new UpdateGuiEvent)
 
       if (controller.getGameTable.player.size == controller.getGameTable.nrOfPlrs) {
         controller.gameTable = controller.gameTable.createDeck(controller.gameTable.getDeck)
         controller.gameTable = controller.gameTable.handOutCards()
         controller.nextState()
+        controller.publish(new UpdateGuiEvent)
         controller.publish(new NextStateEvent)
       }
     }
@@ -84,13 +89,15 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
         || controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.size)) {
         controller.gameTable = controller.gameTable.clearRound()
         controller.gameTable = controller.gameTable.showBlackCard()
-        controller.publish(new UpdateToolBarEvent)
+        controller.publish(new UpdateInfotextbarEvent)
         controller.publish(new UpdateTuiEvent)
+        controller.publish(new UpdateGuiEvent)
       } else {
         if (controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.length)) {
           controller.gameTable = controller.gameTable.drawWhiteCard()
           controller.gameTable = controller.gameTable.handOutCards()
           controller.publish(new UpdateTuiEvent)
+          controller.publish(new UpdateGuiEvent)
           controller.nextState()
         }
         val currentPlayer = controller.getGameTable.getCurrPlr
@@ -100,6 +107,7 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
               .setPlrAnswer(currentPlayer, controller.getGameTable.player(currentPlayer).cards(input.toInt))
           controller.gameTable = controller.gameTable.setNextPlr()
           controller.publish(new UpdateTuiEvent)
+          controller.publish(new UpdateGuiEvent)
         }
       }
       if (controller.getGameTable.currRound >= controller.getGameTable.nrOfRounds) {

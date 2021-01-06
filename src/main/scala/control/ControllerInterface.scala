@@ -24,4 +24,5 @@ class ThirdPageEvent extends Event
 class NextStateEvent extends Event
 class UpdateTuiEvent extends Event
 class UndoEvent extends Event
-class UpdateToolBarEvent extends Event
+class UpdateInfotextbarEvent extends Event
+class UpdateGuiEvent extends Event
