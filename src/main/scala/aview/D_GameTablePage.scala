@@ -17,7 +17,8 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
   val newRoundButton = new Button("New round")
   val currRoundLbl = new Label(s"Round ${controller.getGameTable.currRound} of ${controller.getGameTable.nrOfRounds}")
   val fillLb = new Label(" ")
-  val currBlackLbl = new Label(s"Current black: ${controller.getGameTable.currBlack}")
+  val currBlackLbl = new Label(s"${controller.getGameTable.currBlack}")
+  infotextbar.text = s"${controller.getGameTable.player(controller.getGameTable.currPlr).name} begins!"
 
   var availablePlayerCards =
     new ComboBox[WhiteCard](controller.getGameTable.player(controller.getGameTable.currPlr).cards)
@@ -70,7 +71,7 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
       currBlackLbl.text = s"${controller.getGameTable.currBlack}"
       var displayedWhites = List[String]()
       for (x <- controller.getGameTable.placedWhiteCards) {
-        displayedWhites = displayedWhites :+ s"Player ${x._1.name} put    ${x._2}"
+        displayedWhites = displayedWhites :+ s"Player ${x._1.name} put: ${x._2} "
       }
       placedWhites = new ListView[String](displayedWhites)
       placedWhites.revalidate()
