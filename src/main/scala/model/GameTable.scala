@@ -15,9 +15,9 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   }
 
   override def setNrRounds(nrOfPlrs: Int): GameTable = {
-    if (nrOfPlrs == 2) copy(nrOfPlrs, nrOfRounds = 4)
-    else if (nrOfPlrs == 3) copy(nrOfPlrs, nrOfRounds= 3)
-    else copy(nrOfPlrs, nrOfRounds = 4)
+    if (nrOfPlrs == 2) copy(nrOfPlrs, nrOfRounds = 8)
+    else if (nrOfPlrs == 3) copy(nrOfPlrs, nrOfRounds= 6)
+    else copy(nrOfPlrs, nrOfRounds = 5)
   }
 
   override def addPlr(name: String): GameTable = {
@@ -84,6 +84,7 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
     reduced = Random.shuffle(reduced)
     val black = reduced.head
     val round = currRound + 1
+    handOutCards()
     copy(blackCards = reduced.filterNot(_ == black), currBlack = black.text1, currRound = round)
   }
 
@@ -96,6 +97,7 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   override def getCurrPlr: Int = currPlr
 
   override def setNextPlr(): GameTable = copy(currPlr = (currPlr + 1) % nrOfPlrs)
+
 
   override def clearRound(): GameTable = {
     copy(placedWhiteCards = Map[Player, String]())
