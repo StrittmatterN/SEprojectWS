@@ -40,6 +40,8 @@ class B_AddCardsView(infotextbar: Infotextbar, controller: ControllerInterface) 
     case ButtonClicked(x) if x == addCardButton =>
       controller.evaluate(cardTF.text)
       cardTF.text = "your next card text"
-    case _: ThirdPageEvent => this.close()
+    case _: ThirdPageEvent =>
+      this.close()
+      infotextbar.text = "enter player names"
   }
 }
