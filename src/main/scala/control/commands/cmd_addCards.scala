@@ -12,7 +12,7 @@ class cmd_addCards(text: String, controller: Controller) extends Command {
     val tmpCards = controller.getGameTable.cardDeck
     undoDeck = tmpCards
     var notContains = true
-    if (text.contains("_")) {
+    if (text.contains("_") || text.contains("?")) {
       for (x <- tmpCards.blacks) {
         if (x.equals(text)) notContains = false
       }

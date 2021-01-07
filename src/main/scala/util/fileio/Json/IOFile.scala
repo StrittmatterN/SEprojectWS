@@ -16,7 +16,7 @@ class IOFile extends IOInterface {
     val items = json \\ "card"
     val cardDeck = CardDeck(List[String](), List[String]())
     for (x <- items) {
-      if (x.toString().contains("_"))
+      if (x.toString().contains("_") || x.toString().contains("?"))
         cardDeck.blacks = cardDeck.blacks :+ x.toString().replace("\"","")
       else cardDeck.whites = cardDeck.whites :+ x.toString().replace("\"", "")
     }
