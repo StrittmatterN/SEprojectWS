@@ -1,5 +1,7 @@
 package util.fileio.XML
 
+import java.io.{File, PrintWriter}
+
 import model._
 import util.fileio.IOInterface
 
@@ -18,15 +20,12 @@ class IOFile extends IOInterface {
   }
 
   override def save(modelInterface: ModelInterface): Unit = {
-    // This shit doesnt work yet
-    /**
     val printWriter = new PrintWriter(new File("CardDeck.xml"))
     val blacks = <CardDeck>{modelInterface.getDeck.blacks.map(x => toXML(x))}</CardDeck>
     val whites = <CardDeck>{modelInterface.getDeck.blacks.map(x => toXML(x))}</CardDeck>
     for (x <- blacks) printWriter.write("<CardDeck>" + x.toString() + "\n")
     for (x <- whites) printWriter.write(x.toString() + "\n" + "<\\CardDeck>")
     printWriter.close()
-     */
   }
   def toXML(x: String): Node = <card><text>{x}</text></card>
 }
