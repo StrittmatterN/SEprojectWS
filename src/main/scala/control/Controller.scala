@@ -3,8 +3,8 @@ package control
 import model.{GameTable, ModelInterface}
 import control.commands._
 import module.Module
-import util._
-import util.fileio.IOFile
+import util.fileio.Json.IOFile
+import util.UndoManager
 import com.google.inject._
 
 import scala.swing.Publisher

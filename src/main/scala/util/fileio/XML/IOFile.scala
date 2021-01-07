@@ -1,7 +1,9 @@
-package util.fileio
-import java.io.{File, PrintWriter}
-import scala.xml._
+package util.fileio.XML
+
 import model._
+import util.fileio.IOInterface
+
+import scala.xml._
 
 class IOFile extends IOInterface {
   override def load(gameTable: ModelInterface): ModelInterface = {
