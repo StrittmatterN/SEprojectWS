@@ -3,7 +3,8 @@ package control
 import model.{GameTable, ModelInterface}
 import control.commands._
 import module.Module
-import util.fileio.Json.IOFile
+//import util.fileio.Json.IOFile
+import util.fileio.XML.IOFile
 import util.UndoManager
 import com.google.inject._
 
@@ -94,7 +95,6 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
         controller.publish(new UpdateGuiEvent)
       } else {
         if (controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.length)) {
-          controller.gameTable = controller.gameTable.drawWhiteCard()
           controller.gameTable = controller.gameTable.handOutCards()
           controller.publish(new UpdateTuiEvent)
           controller.publish(new UpdateGuiEvent)

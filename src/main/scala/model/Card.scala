@@ -24,8 +24,7 @@ case class Cards(cardList: List[Card]) extends Card {
   def printCard(): Unit = cardList.foreach((c: Card) => c.printCard())
 
   def addNew(card: Card): Cards = {
-    val tmp = cardList :+ card
-    copy(tmp)
+    copy(cardList = cardList :+ card)
   }
 
   def remove(card: Card): Cards = copy(cardList.filterNot(_ == card))

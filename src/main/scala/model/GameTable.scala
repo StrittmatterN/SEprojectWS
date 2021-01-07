@@ -17,7 +17,7 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   override def setNrRounds(nrOfPlrs: Int): GameTable = {
     if (nrOfPlrs == 2) copy(nrOfPlrs, nrOfRounds = 8)
     else if (nrOfPlrs == 3) copy(nrOfPlrs, nrOfRounds= 6)
-    else copy(nrOfPlrs, nrOfRounds = 5)
+    else copy(nrOfPlrs, nrOfRounds = 10)
   }
 
   override def addPlr(name: String): GameTable = {
@@ -37,19 +37,13 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
     createDeck(deck)
   }
 
-  override def getWhitesOrBlacks(color: String): List[Card] = {
-    if (color == "blacks") blackCards
-    else if (color == "whites") whiteCards
-    else throw new Exception("parameter in getCardDeck must either be whites or blacks")
-  }
-
   override def getDeck: CardDeck = cardDeck
 
   override def createHand(): List[WhiteCard] = {
     val whiteDeck = Random.shuffle(whiteCards)
     var handOutWhites = List[WhiteCard]()
     var count = 0
-    for (x <- whiteDeck if whiteDeck.nonEmpty; if count < 5) {
+    for (x <- whiteDeck if whiteDeck.nonEmpty; if count < 7) {
       handOutWhites = handOutWhites :+ x
       count += 1
     }
@@ -66,17 +60,6 @@ case class GameTable(nrOfPlrs: Int = 0, currPlr: Int = 0, nrOfRounds: Int = 0, c
   override def handOutCards(): GameTable = {
     setPlrHands()
     copy()
-  }
-
-  override def drawWhiteCard(): GameTable = {
-    var whites = Random.shuffle(whiteCards)
-    var plr = Vector[Player]()
-    for (x <- plr) {
-      val card = whites.head
-      whites = whites.filterNot(_ == card)
-      plr = plr :+ Player(x.name, x.cards :+ card, x.isOnIt)
-    }
-    copy(whiteCards = whites, player = plr)
   }
 
   override def showBlackCard(): GameTable = {

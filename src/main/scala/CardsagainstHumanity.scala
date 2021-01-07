@@ -1,5 +1,5 @@
 
-import aview.{Tui, Gui}
+import aview.{Gui, Tui}
 import com.google.inject.{Guice, Injector}
 import control.Controller
 import module.Module

@@ -6,7 +6,6 @@ trait ModelInterface {
   def addPlr(name: String): GameTable
   def createDeck(deck: CardDeck): GameTable
   def setCardDeck(deck: CardDeck): GameTable
-  def getWhitesOrBlacks(color: String): List[Card]
   def getDeck: CardDeck
   def createHand(): List[WhiteCard]
   def setPlrHands(): Vector[Player]
@@ -16,7 +15,6 @@ trait ModelInterface {
   def setNextPlr(): GameTable
   def clearRound(): GameTable
   def handOutCards(): GameTable
-  def drawWhiteCard(): GameTable
   def printGT()
   def getGT: GameTable
 }

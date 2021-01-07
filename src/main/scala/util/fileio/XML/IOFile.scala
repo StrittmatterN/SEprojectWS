@@ -21,10 +21,12 @@ class IOFile extends IOInterface {
 
   override def save(modelInterface: ModelInterface): Unit = {
     val printWriter = new PrintWriter(new File("CardDeck.xml"))
-    val blacks = <CardDeck>{modelInterface.getDeck.blacks.map(x => toXML(x))}</CardDeck>
-    val whites = <CardDeck>{modelInterface.getDeck.blacks.map(x => toXML(x))}</CardDeck>
-    for (x <- blacks) printWriter.write("<CardDeck>" + x.toString() + "\n")
-    for (x <- whites) printWriter.write(x.toString() + "\n" + "<\\CardDeck>")
+    val blacks = {modelInterface.getDeck.blacks.map(x => toXML(x))}
+    val whites = {modelInterface.getDeck.whites.map(x => toXML(x))}
+    printWriter.write("<CardDeck>\n")
+    for (x <- blacks) printWriter.write("\t" + x.toString().replace("&quot;", "\"") +" \n")
+    for (x <- whites) printWriter.write("\t" + x.toString().replace("&quot;", "\"")+ "\n")
+    printWriter.write("\n</CardDeck>")
     printWriter.close()
   }
   def toXML(x: String): Node = <card><text>{x}</text></card>
