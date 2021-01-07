@@ -94,12 +94,6 @@ class Controller @Inject() (var gameTable: ModelInterface) extends ControllerInt
         controller.publish(new UpdateTuiEvent)
         controller.publish(new UpdateGuiEvent)
       } else {
-        if (controller.getGameTable.placedWhiteCards.size.equals(controller.getGameTable.player.length)) {
-          controller.gameTable = controller.gameTable.handOutCards()
-          controller.publish(new UpdateTuiEvent)
-          controller.publish(new UpdateGuiEvent)
-          controller.nextState()
-        }
         val currentPlayer = controller.getGameTable.getCurrPlr
         if (input.toInt < controller.getGameTable.player(currentPlayer).cards.length || input.toInt >= 0) {
           controller.gameTable =

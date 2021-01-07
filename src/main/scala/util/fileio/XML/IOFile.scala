@@ -24,8 +24,8 @@ class IOFile extends IOInterface {
     val blacks = {modelInterface.getDeck.blacks.map(x => toXML(x))}
     val whites = {modelInterface.getDeck.whites.map(x => toXML(x))}
     printWriter.write("<CardDeck>\n")
-    for (x <- blacks) printWriter.write("\t" + x.toString().replace("&quot;", "\"") +" \n")
-    for (x <- whites) printWriter.write("\t" + x.toString().replace("&quot;", "\"")+ "\n")
+    for (x <- blacks) printWriter.write("\n" + x.toString().replace("&quot;", "\""))
+    for (x <- whites) printWriter.write("\n" + x.toString().replace("&quot;", "\""))
     printWriter.write("\n</CardDeck>")
     printWriter.close()
   }
