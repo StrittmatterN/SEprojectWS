@@ -13,7 +13,7 @@ class IOFile extends IOInterface {
     val slice = xmlFile \\ "text"
     val cardDeck = CardDeck(List[String](), List[String]())
     for (x <- slice) {
-      if (x.text.contains("_")) cardDeck.blacks = cardDeck.blacks :+ x.text
+      if (x.text.contains("_") || x.text.contains("?")) cardDeck.blacks = cardDeck.blacks :+ x.text
       else cardDeck.whites = cardDeck.whites :+ x.text
     }
     gameTable.setCardDeck(cardDeck)
