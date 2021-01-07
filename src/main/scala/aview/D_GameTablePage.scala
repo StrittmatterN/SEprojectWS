@@ -93,6 +93,4 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
     case ButtonClicked(x) if x == newRoundButton =>
       controller.evaluate("")
   }
-
-
 }
