@@ -2,13 +2,15 @@ package model
 
 import scala.xml.Node
 
-// Factory Method
+
 
 trait Card {
   def printCard()
   def createNewCard (text: String): Card
   def toXML: Node
 }
+
+// Factory Method
 
 object Card {
   def apply(text: String): Card = {
@@ -20,6 +22,15 @@ object Card {
 // Composite
 
 case class Cards(cardList: List[Card]) extends Card {
+
+  def getBlacksAndWhites: List[Card] = {
+    var composite = List[Card]()
+    for (x <- cardList) {
+      if (x.toString.contains("_") || x.toString.contains("?")) composite = composite :+ BlackCard(x.toString)
+      else composite = composite :+ WhiteCard(x.toString)
+    }
+    composite
+  }
 
   def printCard(): Unit = cardList.foreach((c: Card) => c.printCard())
 
