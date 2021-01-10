@@ -6,6 +6,8 @@ import control.ControllerInterface
 
 import scala.swing._
 import control._
+import javax.swing.UIManager
+import javax.swing.plaf.basic.BasicLookAndFeel
 
 class Gui (controller: ControllerInterface) extends Frame {
   title = "Cards Against Humanity"

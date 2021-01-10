@@ -17,7 +17,10 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
   val newRoundButton = new Button("New round")
   val currRoundLbl = new Label(s"Round ${controller.getGameTable.currRound} of ${controller.getGameTable.nrOfRounds}")
   val fillLb = new Label(" ")
-  val currBlackLbl = new Label(s"${controller.getGameTable.currBlack}")
+  val currBlackTextArea: TextArea = new TextArea(s"${controller.getGameTable.currBlack}") {
+    background = new Color(169, 199, 177)
+    foreground = Color.WHITE
+  }
   infotextbar.text = s"${controller.getGameTable.player(controller.getGameTable.currPlr).name} begins!"
 
   var availablePlayerCards =
@@ -28,8 +31,16 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
     background = Color.WHITE
     foreground = Color.BLACK
     contents += currRoundLbl
+    currRoundLbl.foreground = Color.BLACK
+    currBlackTextArea.foreground = Color.WHITE
+    currBlackTextArea.background = Color.BLACK
+    currRoundLbl.background = Color.BLACK
     contents += fillLb
-    contents += currBlackLbl
+    contents += currBlackTextArea
+    currBlackTextArea.lineWrap = true
+    currBlackTextArea.rows = 3
+    currBlackTextArea.font = Font("System", Font.Plain, 20)
+    currBlackTextArea.wordWrap = true
   }
   val availableWhitesPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
@@ -68,7 +79,7 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
       infotextbar.text = s"Current player: ${controller.getGameTable.player(controller.getGameTable.currPlr).name}"
     case _: UpdateGuiEvent =>
       currRoundLbl.text = s"Round ${controller.getGameTable.currRound} of ${controller.getGameTable.nrOfRounds - 1}"
-      currBlackLbl.text = s"${controller.getGameTable.currBlack}"
+      currBlackTextArea.text = s"${controller.getGameTable.currBlack}"
       var displayedWhites = List[String]()
       for (x <- controller.getGameTable.placedWhiteCards) {
         displayedWhites = displayedWhites :+ s"Player ${x._1.name} put: ${x._2} "
