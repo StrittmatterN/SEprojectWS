@@ -42,13 +42,13 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
     currBlackTextArea.font = Font("System", Font.Plain, 20)
     currBlackTextArea.wordWrap = true
   }
-  val availableWhitesPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
+  val placedWhitesPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
     foreground = Color.BLACK
     contents += placedWhites
 
   }
-  val showPlacedWhiteCardsPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
+  val availableWhiteCardsPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
     foreground = Color.BLACK
     contents += availablePlayerCards
@@ -60,13 +60,13 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
     contents += newRoundButton
   }
 
-
   val gridPanel: GridPanel = new GridPanel(2, 2) {
     contents += currRoundPanel
-    contents += showPlacedWhiteCardsPanel
-    contents += availableWhitesPanel
+    contents += availableWhiteCardsPanel
+    contents += placedWhitesPanel
     contents += buttonPanel
   }
+
 
   add(gridPanel, Position.Center)
 
@@ -81,8 +81,10 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
       currRoundLbl.text = s"Round ${controller.getGameTable.currRound} of ${controller.getGameTable.nrOfRounds - 1}"
       currBlackTextArea.text = s"${controller.getGameTable.currBlack}"
       var displayedWhites = List[String]()
-      for (x <- controller.getGameTable.placedWhiteCards) {
-        displayedWhites = displayedWhites :+ s"Player ${x._1.name} put: ${x._2} "
+      if (controller.getGameTable.placedWhiteCards.size == controller.getGameTable.nrOfPlrs) {
+        for (x <- controller.getGameTable.placedWhiteCards) {
+          displayedWhites = displayedWhites :+ s"Player ${x._1.name} put: ${x._2} "
+        }
       }
       placedWhites = new ListView[String](displayedWhites)
       placedWhites.revalidate()
@@ -91,9 +93,9 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
       availablePlayerCards =
         new ComboBox[WhiteCard](controller.getGameTable.player(controller.getGameTable.getCurrPlr).cards)
       availablePlayerCards.revalidate()
-      showPlacedWhiteCardsPanel.contents.update(0, availablePlayerCards)
-      availableWhitesPanel.revalidate()
-      availableWhitesPanel.contents.update(0, placedWhites)
+      availableWhiteCardsPanel.contents.update(0, availablePlayerCards)
+      placedWhitesPanel.revalidate()
+      placedWhitesPanel.contents.update(0, placedWhites)
 
       repaint()
     case ButtonClicked(x) if x == placeCardButton =>
