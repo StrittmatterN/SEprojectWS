@@ -45,8 +45,8 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
   val placedWhitesPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
     foreground = Color.BLACK
+    placedWhites.background = Color.BLACK
     contents += placedWhites
-
   }
   val availableWhiteCardsPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
@@ -85,10 +85,11 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
         for (x <- controller.getGameTable.placedWhiteCards) {
           displayedWhites = displayedWhites :+ s"Player ${x._1.name} put: ${x._2} "
         }
+        placeCardButton.text = "Next round"
+      } else {
+        placeCardButton.text = "Place card"
       }
       placedWhites = new ListView[String](displayedWhites)
-      placedWhites.revalidate()
-      placedWhites.repaint()
 
       availablePlayerCards =
         new ComboBox[WhiteCard](controller.getGameTable.player(controller.getGameTable.getCurrPlr).cards)
