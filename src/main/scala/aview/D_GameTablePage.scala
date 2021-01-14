@@ -45,7 +45,6 @@ class D_GameTablePage(infotextbar: Infotextbar, controller: ControllerInterface)
   val placedWhitesPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
     background = Color.WHITE
     foreground = Color.BLACK
-    placedWhites.background = Color.BLACK
     contents += placedWhites
   }
   val availableWhiteCardsPanel: BoxPanel = new BoxPanel(Orientation.Vertical) {
