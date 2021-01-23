@@ -4,7 +4,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import util.Observer
 
-class ControllerSpec extends AnyWordSpec with Matchers {
+class control_ControllerSpec extends AnyWordSpec with Matchers {
   "A Controller" when {
     val controller = new Controller(new GameTable)
     val observer: Observer = new Observer {
@@ -22,6 +22,8 @@ class ControllerSpec extends AnyWordSpec with Matchers {
 
     "adds cards" in {
       controller.evaluate("Mama")
+      val contains: Boolean = controller.getGameTable.whiteCards.contains("Mama")
+      contains should be (true)
       controller.evaluate("continue")
       controller.state.getCurrState shouldBe "setup state part 3"
     }
@@ -32,7 +34,7 @@ class ControllerSpec extends AnyWordSpec with Matchers {
       controller.state.getCurrState shouldBe "set white cards state"
     }
 
-    "set a white card from the current player" in {
+    "set cards from the player" in {
       "is first player" in {
         controller.gameTable.getCurrPlr should be (0)
         controller.gameTable.getGT.player(controller.gameTable.getCurrPlr).name shouldBe "Niklas"

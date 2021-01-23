@@ -2,7 +2,7 @@ import model.{CardDeck, GameTable, WhiteCard}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GameTableSpec extends AnyWordSpec with Matchers {
+class model_GameTableSpec extends AnyWordSpec with Matchers {
   "A GameTable" should { "new" should {
     var gameTable = new GameTable
     "inits the game" in {

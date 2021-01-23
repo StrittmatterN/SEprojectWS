@@ -2,7 +2,7 @@ import model.WhiteCard
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class WhiteCardsSpec extends AnyWordSpec with Matchers{
+class model_WhiteCardsSpec extends AnyWordSpec with Matchers{
   "A WhiteCard" should { "new" should {
     val whitecard = WhiteCard("DefaultText")
     "have a Text" in {

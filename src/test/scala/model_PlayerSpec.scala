@@ -3,7 +3,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 
-class PlayerSpec extends AnyWordSpec with Matchers {
+class model_PlayerSpec extends AnyWordSpec with Matchers {
  "A player" when { "new" should {
    val player = Player("Your Name", List[WhiteCard](), isOnIt = true)
    "have a name" in {
