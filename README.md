@@ -8,7 +8,7 @@ It is a scala project created by Paul Ruess and Niklas Strittmatter where we are
 The project is still in progress.
 
 ## Rules
-Every Player gets white cards and a black card will be randomly selected. Every player fills out the gap in the black card with your card.
+Every Player gets white cards, a black card will be randomly displayed. Every player fills out the gap in the black card with one of their white cards.
 Then decide which card is the funniest. 
 
 ## License
