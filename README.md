@@ -1,6 +1,3 @@
-Cards against Humanity for Software Engineering class at HTWG Konstanz 
-WS 20/21
-
 [![Build Status](https://travis-ci.org/StrittmatterN/SEprojectWS.svg?branch=master)](https://travis-ci.org/StrittmatterN/SEprojectWS)
 
 # Cards against Humanity for Software Engineering class at HTWG Konstanz WS 20/21
@@ -13,4 +10,7 @@ The project is still in progress.
 ## Rules
 Every Player gets white cards and a black card will be randomly selected. Every player fills out the gap in the black card with your card.
 Then decide which card is the funniest. 
+
+## License
+Distributed under the MIT License. See LICENSE for more information.
 
